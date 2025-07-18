@@ -4,7 +4,7 @@
 {% block title %}| Home{% endblock %}
 
 {% block content %}
-<div class="relative isolate px-2 md:px-6 pt-14 lg:px-8 h-screen z-30 flex flex-col justify-center items-center">
+<div class="relative isolate px-2 md:px-6 lg:px-8 h-screen z-30 flex flex-col justify-center items-center">
     <div class="mx-auto w-full {% if request.user.is_authenticated %} md:pt-32 {% endif %}">
         <div class="hidden mb-8 md:flex justify-center">
             <div class="relative rounded-full px-3 py-1 text-xs md:text-sm text-center text-white/50 ring-1 ring-white/30 ">
