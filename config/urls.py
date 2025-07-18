@@ -9,7 +9,7 @@ urlpatterns = [
     path('', include("core.urls")),
     path('', include("my_routine.urls")),
 
-    path("__reload__/", include("django_browser_reload.urls")),
+    # path("__reload__/", include("django_browser_reload.urls")),
 ]
 
 
