@@ -10,7 +10,7 @@ SECRET_KEY = 'django-insecure-@aw+^)y#@%gw1&rao@+ks$6bi_i+dnpz)tj-+o5rjm8_t@4ik3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', 'routineproject.onrender.com', '.onrender.com', 'www.routineproject.onrender.com']
+ALLOWED_HOSTS = ['*', 'routines-s070.onrender.com', '.onrender.com', 'www.routines-s070.onrender.com']
 NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 
 # Application definition
@@ -131,4 +131,8 @@ AUTH_USER_MODEL = 'core.UserAccount'
 AUTHENTICATION_BACKENDS = [
     'core.backends.AuthBackend',
     'django.contrib.auth.backends.ModelBackend',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://routines-s070.onrender.com',
 ]
