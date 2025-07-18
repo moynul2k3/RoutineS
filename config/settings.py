@@ -136,5 +136,5 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://routines-s070.onrender.com',
+    'https://routines-s070.onrender.com'
 ]
