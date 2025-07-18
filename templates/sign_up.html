@@ -10,8 +10,8 @@
         <p class="text-center text-xs text-white/70">Fill the form very carefully.</p>
     </div>
 
-    <div class="mt-10 sm:mx-auto sm:w-full px-4">
-        <form class="space-y-4" action="." method="POST">
+    <div class="mt-10 sm:mx-auto w-full md:max-w-[30%] px-4">
+        <form class="space-y-4 w-full" action="." method="POST" >
             {% csrf_token %}
             <div>
                 <label for="name" class="block text-sm/6 font-medium text-white/90">Name</label>
