@@ -10,7 +10,7 @@ SECRET_KEY = 'django-insecure-@aw+^)y#@%gw1&rao@+ks$6bi_i+dnpz)tj-+o5rjm8_t@4ik3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*', 'routines-s070.onrender.com', '.onrender.com', 'www.routines-s070.onrender.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'routines-s070.onrender.com', '.onrender.com', 'www.routines-s070.onrender.com']
 NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 
 # Application definition
@@ -119,7 +119,7 @@ USE_TZ = True
 import os
 
 STATIC_URL = 'static/'
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_ROOT = BASE_DIR / 'static'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
