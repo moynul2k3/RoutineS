@@ -92,48 +92,55 @@ def university_detail_view(request):
 
 
 
+from collections import defaultdict
+
 @login_required(login_url='signin') 
 def manage_university(request):
     user = request.user
     if not (user.is_staff or user.is_superuser):
         return redirect('/')
-    
+
     if request.method == 'POST':
         university_name = request.POST.get('university_name')
-        university_logo = request.POST.get('university_logo')
+        university_logo = request.FILES.get('university_logo')  # Use FILES for image
         university_location = request.POST.get('university_location')
         university_details = request.POST.get('university_details')
 
-        # Create university
-        university = University.objects.create(name=university_name, logo=university_logo, location=university_location ,details=university_details)
+        university = University.objects.create(
+            name=university_name,
+            logo=university_logo,
+            location=university_location,
+            details=university_details
+        )
 
         # Create shifts
         for shift_duration in request.POST.getlist('shifts[]'):
             if shift_duration.strip():
                 Shift.objects.create(university=university, duration=shift_duration.strip())
 
-        # Create departments and batches
-        departments = [key for key in request.POST if key.startswith('departments')]
+        # Parse departments and batches
         from collections import defaultdict
         dept_data = defaultdict(lambda: {'name': '', 'batches': []})
 
-        for key in departments:
-            parts = key.split('[')
-            index = parts[1][:-1]
-            field = parts[2][:-1]
-            value = request.POST[key]
-            if field == 'name':
-                dept_data[index]['name'] = value
-            elif field == 'batches':
-                dept_data[index]['batches'].append(value)
+        for key in request.POST:
+            if key.startswith('departments'):
+                parts = key.split('[')
+                index = parts[1][:-1]
+                field = parts[2][:-1]
+
+                if field == 'name':
+                    dept_data[index]['name'] = request.POST.get(key)
+                elif field == 'batches':
+                    dept_data[index]['batches'].extend(request.POST.getlist(key))  # <- Use getlist here
 
         for data in dept_data.values():
             dept = Department.objects.create(university=university, name=data['name'])
             for batch_name in data['batches']:
-                Batch.objects.create(department=dept, name=batch_name)
+                if batch_name.strip():
+                    Batch.objects.create(department=dept, name=batch_name.strip())
 
         messages.success(request, "University and related data saved successfully!")
-        return redirect('manage_university')  # or wherever you want
+        return redirect('manage_university')
 
     return render(request, 'manage_university.html')
 
