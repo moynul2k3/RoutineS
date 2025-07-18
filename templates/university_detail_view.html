@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static tailwind_tags %}
+{% block title %}University Details{% endblock %}
+
+{% block content %}
+<div class="w-full flex max-md:flex-col gap-10 mx-auto px-4 md:px-6 py-10 text-white pt-20 md:pt-32 min-h-screen">
+    <div class="bg-white/10 rounded-xl w-full md:w-1/3 p-3 md:p-6">
+        <h1 class="text-3xl font-bold mb-6">University Information</h1>
+
+        {% if request.user.is_staff or request.user.is_superuser %}
+            <form method="get" class="mb-6">
+                <label for="university_id" class="block mb-1 text-sm">Select University:</label>
+                <div class="flex justify-between items-center gap-2 md:gap-3 h-10 md:h-12">
+                    <select name="university_id" id="university_id" class="w-full h-full p-2 bg-black/20 text-inherit rounded" onchange="this.form.submit()">
+                        <option value="" class="bg-gray-900/70" >Select University</option>
+                        {% for uni in universities %}
+                            <option class="bg-gray-900/70" value="{{ uni.id }}" {% if selected_university and selected_university.id == uni.id %}selected{% endif %}>
+                                {{ uni.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <a href="{% url 'manage_university' %}" class="h-full w-14 md:w-60 bg-pink-500/70 hover:bg-pink-500/80 rounded-sm flex justify-center items-center">
+                        <span class="text-sm max-md:hidden">Add new</span>
+                        <span class="text-3xl md:hidden">+</span>
+                    </a>
+                </div>
+            </form>
+        {% endif %}
+        {% if selected_university %}
+            <div class="bg-white/10 p-6 rounded mb-8 relative">
+                <div class="flex gap-4 max-md:flex-col">
+                    <img src="{% if selected_university.logo %}{{ selected_university.logo.url }}{% else %}{% static 'assets/image/user.png' %}{% endif %}" alt="" class="h-20 w-20 rounded-full">
+                    <div>
+                        <h2 class="text-2xl font-semibold">{{ selected_university.name }}</h2>
+                        <p class="mt-2 text-gray-200">{{ selected_university.location }}</p>
+                    </div>
+                </div>
+                
+                <p class="mt-2 text-gray-200">{{ selected_university.details }}</p>
+                <p class="mt-1 text-sm text-gray-400">Created at: {{ selected_university.created_at }}</p>
+
+                {% if request.user.is_stuff or request.user.is_superuser %}
+                    <a href="{% url 'update_university' selected_university.id %}" class="absolute top-3 right-3 px-4 py-1 text-xs rounded-full bg-white/10 hover hover:bg-pink-500/60 border-[1px] border-white/20 transition-all ease-in-out duration-200">update</a>
+                {% endif %}
+
+                <!-- {% if request.user.is_stuff or request.user.is_superuser %}
+                    <a href="{% url 'manage_university' %}" class="{% if request.path == '/manage-university/' %} absolute top-3 right-3 bg-pink-500/10 text-pink-500 {% else %} bg-white/10 text-white {% endif %} h-10 px-6 bg-pink-500/10 text-pink-500 rounded-full border border-white/20 flex items-center text-sm whitespace-nowrap">Create Universite</a>
+                {% endif %} -->
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold mb-2 ">Shifts</h3>
+                {% if shifts %}
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {% for shift in shifts %}
+                            <p class="px-5 py-1 text-center bg-white/10 rounded-full border-[1px] border-white/20 text-xs">{{ shift.duration }}</p>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-300">No shifts available.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="bg-white/10 rounded-xl w-full md:w-2/3 p-3 md:p-6">
+        {% if selected_university %}
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-2">Departments & Batches</h3>
+                {% for dept in departments %}
+                    <div class="bg-white/5 p-4 rounded mb-4">
+                        <h4 class="text-lg font-bold">{{ dept.name }}</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-3">
+                            {% for batch in dept.batches.all %}
+                                <p class="px-5 py-1 text-center bg-white/10 rounded-full border-[1px] border-white/20 text-xs">{{ batch.name }}</p>
+                            {% empty %}
+                                <p>No batches available.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-400">No university selected or available for you.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

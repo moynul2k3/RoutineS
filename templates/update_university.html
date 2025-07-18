@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Update University{% endblock %}
+
+{% block content %}
+<div class="w-full mx-auto py-20 md:py-32 px-3 md:px-3">
+    <form method="POST" enctype="multipart/form-data" class="text-white flex max-lg:flex-col justify-between items-start gap-3 md:gap-10">
+        {% csrf_token %}
+        <div class="w-full lg:w-2/5 lg:sticky top-20">
+            <!-- University -->
+            <div class="bg-white/10 p-3 md:p-6 py-4 rounded-xl ">
+                <h2 class="text-2xl font-bold mb-4 text-white pb-4">Update University</h2>
+                <div class="flex max-md:flex-col gap-3 justify-between items-start">
+                    <div class="mb-4 max-md:flex justify-center items-center max-md:w-full">
+                        <!-- Image Preview with click-to-upload -->
+                        <div 
+                            class="w-32 h-32 mb-2 rounded-full overflow-hidden border border-white/20 bg-white/10 cursor-pointer group"
+                            onclick="document.getElementById('universityLogoInput').click()"
+                            title="Click to change logo"
+                        >
+                            <img 
+                                id="logoPreview" 
+                                src="{% if university.logo %}{{ university.logo.url }}{% else %}{% static 'assets/image/user.png' %}{% endif %}" 
+                                alt="Preview" 
+                                class="w-full h-full object-cover transition duration-200 group-hover:scale-105"
+                            >
+                        </div>
+
+                        <!-- Hidden File Input -->
+                        <input 
+                            type="file" 
+                            name="university_logo" 
+                            id="universityLogoInput"
+                            accept="image/*"
+                            class="hidden"
+                        >
+                    </div>
+                    <div class="mb-4 flex-1 max-md:w-full">
+                        <label class="block mb-2 text-sm font-semibold">University Name</label>
+                        <input type="text" name="university_name" value="{{ university.name }}" class="w-full px-2 md:px-3 py-2 rounded bg-white/20 border border-gray-600 focus:outline-none" required>
+                    </div>
+                </div>
+
+                <script>
+                    document.getElementById('universityLogoInput').addEventListener('change', function (e) {
+                        const file = e.target.files[0];
+                        const preview = document.getElementById('logoPreview');
+
+                        if (file && file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function (event) {
+                                preview.src = event.target.result;
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            preview.src = "{% static 'default-logo.png' %}";
+                        }
+                    });
+                </script>
+
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-semibold">University Location</label>
+                    <input type="text" name="university_location" value="{{ university.location }}" class="w-full px-2 md:px-3 py-2 rounded bg-white/20 border border-gray-600 focus:outline-none" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-semibold">Details</label>
+                    <textarea name="university_details" class="w-full px-4 py-2 rounded bg-white/10 border border-white/20 focus:outline-none" rows="3" required>{{ university.details }}</textarea>
+                </div>
+            </div>
+
+            <!-- Shifts -->
+            <div class="mb-6 mt-5 p-3 md:p-6 bg-white/10 rounded-xl">
+                <h3 class="text-lg font-semibold mb-2">Shifts</h3>
+                <div id="shift-container" class="grid max-md:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-3 md:p-6 py-4">
+                    {% for shift in shifts %}
+                    <div class="flex gap-4 mb-2 items-center shift-entry relative">
+                        <input type="text" name="shifts[]" value="{{ shift.duration }}" class="flex-1 px-3 py-2 rounded bg-white/10 border border-white/20 focus:outline-none" required>
+                        {% if not forloop.first %}
+                            <button type="button" class="remove-shift text-red-500 text-xl ml-2 absolute -top-3 -right-3 h-6 w-6 flex justify-center items-center rounded-full bg-white">×</button>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" id="add-shift" class="text-sm text-green-500 hover:underline mt-1">+ Add another shift</button>
+            </div>
+            <div class="flex justify-center items-center w-full mt-5 md:mt-10">
+                <button type="submit" class="bg-pink-600/70 hover:bg-pink-700/70 px-2 md:px-3 w-1/2 flex justify-center items-center py-2 text-white rounded">Update</button>
+            </div>
+        </div>
+
+        <!-- Departments -->
+        <div class="mb-6 w-full lg:w-3/5 bg-white/10 p-3 md:p-6 py-4 rounded-xl ">
+            <h3 class="text-lg font-semibold mb-2">Departments</h3>
+            <div id="department-container">
+                {% for department in departments %}
+                <div class="department-entry mb-4 bg-gray-900/40 p-4 rounded relative">
+                    {% if not forloop.first %}
+                        <button type="button" class="remove-department text-red-500 text-xl absolute -top-3 -right-3 h-6 w-6 flex justify-center items-center rounded-full bg-white">×</button>
+                    {% endif %}
+                    <input type="text" name="departments[{{ forloop.counter0 }}][name]" value="{{ department.name }}" placeholder="Department Name" class="w-full px-3 py-2 rounded bg-white/10 border border-white/20 focus:outline-none mb-3" required>
+
+                    <div class="batch-container grid max-md:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-3 md:p-6 py-4">
+                        {% for batch in department.batches.all %}
+                        <div class="flex items-center mb-2 batch-entry relative">
+                            <input type="text" name="departments[{{ forloop.parentloop.counter0 }}][batches][]" value="{{ batch.name }}" class="flex-1 px-3 py-2 rounded bg-white/10 border border-white/20 focus:outline-none" required>
+                            {% if not forloop.first %}
+                            <button type="button" class="remove-batch text-red-500 text-xl ml-2 absolute -top-3 -right-3 h-6 w-6 flex justify-center items-center rounded-full bg-white">×</button>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="add-batch text-sm text-blue-400 hover:underline">+ Add batch</button>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="add-department" class="text-sm text-green-500 hover:underline">+ Add another department</button>
+        </div>
+    </form>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+let departmentIndex = parseInt("{{ departments|length|default:'0' }}");
+
+// Add new shift
+$('#add-shift').click(function () {
+    $('#shift-container').append(`
+        <div class="flex gap-4 mb-2 items-center shift-entry relative">
+            <input type="text" name="shifts[]" placeholder="Shift Duration" class="flex-1 px-3 py-2 rounded bg-white/10 border border-white/20 focus:outline-none" required>
+            <button type="button" class="remove-shift text-red-500 text-xl ml-2 absolute -top-3 -right-3 h-6 w-6 flex justify-center items-center rounded-full bg-white">×</button>
+        </div>`);
+});
+
+// Remove shift
+$(document).on('click', '.remove-shift', function () {
+    $(this).closest('.shift-entry').remove();
+});
+
+// Add department
+$('#add-department').click(function () {
+    let html = `
+        <div class="department-entry mb-4 bg-gray-900/40 p-4 rounded relative">
+            <button type="button" class="remove-department absolute top-2 right-2 text-red-500 text-xl absolute -top-3 -right-3 h-6 w-6 flex justify-center items-center rounded-full bg-white">×</button>
+            <input type="text" name="departments[${departmentIndex}][name]" placeholder="Department Name" class="w-full px-3 py-2 rounded bg-white/10 border border-white/20 focus:outline-none mb-3" required>
+            <div class="batch-container grid max-md:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-3 md:p-6 py-4">
+                <div class="flex items-center mb-2 batch-entry">
+                    <input type="text" name="departments[${departmentIndex}][batches][]" placeholder="Batch Name" class="flex-1 px-3 py-2 rounded bg-white/10 border border-white/20 focus:outline-none" required>
+                </div>
+            </div>
+            <button type="button" class="add-batch text-sm text-blue-400 hover:underline">+ Add batch</button>
+        </div>`;
+    $('#department-container').append(html);
+    departmentIndex++;
+});
+
+// Remove department
+$(document).on('click', '.remove-department', function () {
+    $(this).closest('.department-entry').remove();
+});
+
+// Add batch to any department (including first)
+$(document).on('click', '.add-batch', function () {
+    const departmentWrapper = $(this).closest('.department-entry');
+    const deptInput = departmentWrapper.find('input[name^="departments["]').first();
+    const nameAttr = deptInput.attr('name');
+    const match = nameAttr && nameAttr.match(/^departments\[(\d+)]/);
+    if (!match) return;
+
+    const index = match[1];
+    const container = departmentWrapper.find('.batch-container');
+
+    container.append(`
+        <div class="flex items-center mb-2 batch-entry relative">
+            <input type="text" name="departments[${index}][batches][]" placeholder="Batch Name" class="flex-1 px-3 py-2 rounded bg-white/10 border border-white/20 focus:outline-none" required>
+            <button type="button" class="remove-batch text-red-500 text-xl ml-2 absolute -top-3 -right-3 h-6 w-6 flex justify-center items-center rounded-full bg-white">×</button>
+        </div>`);
+});
+
+// Remove batch
+$(document).on('click', '.remove-batch', function () {
+    $(this).closest('.batch-entry').remove();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,9 @@
+<div id="scrollContainer2" class="w-full overflow-x-auto px-4 cursor-grab">
+    <div class="whitespace-nowrap flex items-center justify-center gap-4 min-w-max py-2">
+        <a href="{% url 'shedule_update' %}" class="{% if request.path == '/shedule_update/' %} bg-pink-500/10 text-pink-500 {% else %} bg-white/10 {% endif %} h-10 px-6  rounded-full border border-white/20 flex items-center text-sm whitespace-nowrap ">Update Shedule</a>
+        <!-- <a href="/" class="{% if request.path == '/' %} bg-pink-500/10 text-pink-500 {% else %} bg-white/10 {% endif %} h-10 px-6 bg-pink-500/10 text-pink-500 rounded-full border border-white/20 flex items-center text-sm whitespace-nowrap">Update Routine</a> -->
+        {% if request.user.is_stuff or request.user.is_superuser %}
+            <a href="{% url 'manage_university' %}" class="{% if request.path == '/manage-university/' %} bg-pink-500/10 text-pink-500 {% else %} bg-white/10 text-white {% endif %} h-10 px-6 bg-pink-500/10 text-pink-500 rounded-full border border-white/20 flex items-center text-sm whitespace-nowrap">Create Universite</a>
+        {% endif %}
+    </div>
+</div>

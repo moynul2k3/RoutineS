@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% load static tailwind_tags %}
+{% load shedule_filters %}
+{% block title %}| Home{% endblock %}
+
+{% block content %}
+<div class="relative isolate px-2 md:px-6 pt-14 lg:px-8 h-screen z-30 flex flex-col justify-center items-center">
+    <div class="mx-auto w-full {% if request.user.is_authenticated %} md:pt-32 {% endif %}">
+        <div class="hidden mb-8 md:flex justify-center">
+            <div class="relative rounded-full px-3 py-1 text-xs md:text-sm text-center text-white/50 ring-1 ring-white/30 ">
+                Welcome to Routine & Shedule → RoutineS
+            </div>
+        </div>
+        <div class="text-center flex justify-center items-center flex-col gap-5">
+            <h1 class="text-2xl font-semibold tracking-tight text-balance w-full text-white/90 md:text-6xl">Find Your Class & Exam Routine Instantly</h1>
+            <p class="text-lg font-medium text-pretty text-gray-500 max-md:text-sm">Just select your department and session — get your updated academic schedule in seconds!</p>
+            
+            <div class="md:hidden mb-4 flex justify-center">
+                <div class="relative rounded-full px-3 py-1 text-xs md:text-sm text-center text-white/50 ring-1 ring-white/30 ">
+                    Welcome to Routine & Shedule → RoutineS
+                </div>
+            </div>
+            
+            <div class=" flex items-center justify-center gap-x-6">
+                <a href={% url "my_shedule" %}  class="rounded-md bg-pink-600/60 px-5 py-1 md:py-2.5 text-xs text-white shadow-xs hover:bg-pink-500/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">My Shedule</a>
+                <a href="#aboutUs" class="text-xs md:text-sm font-semibold text-white/90">Learn more <span aria-hidden="true">→</span></a>
+            </div>
+        </div>
+    </div>
+    {% if request.user.is_authenticated %}
+    <div class="w-full mt-10 md:mt-20">
+        <div class="flex flex-col justify-center items-center md:gap-3">
+            <p class="max-md:text-lg md:text-3xl text-center text-pink-500">Today's Shedule</p>
+            <p class="max-md:text-sm md:text-xl text-center ">{{ day|title }}</p>
+            <hr class="w-[90%] md:w-[40%] max-md:mt-2">
+        </div>
+        <div id="scrollContainer" class="overflow-x-scroll w-full cursor-grab select-none ">
+            <table  class="table-auto min-w-full max-lg:min-w-[2000px] max-md:mt-3 md:mt-10 max-md:mb-4 md:mb-4 ">
+                <thead class="text-amber-400 text-sm">
+                    <tr class="border-gray-400">
+                        {% for shift in shifts %}
+                            <th colspan="3" class=" min-w-[300px]">{{ shift.duration }}</th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for shift in shifts %}
+                            <th class=" ">Course</th>
+                            <th class="">Room</th>
+                            <th class="">Faculty</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="text-xs text-white/70 ">
+                    <tr>
+                        {% with shedule_day=shedules.first %}
+                            {% for shift in shifts %}
+                                {% if shedule_day %}
+                                    {% with detail=shedule_day.details.all|get_shift:shift %}
+                                        {% if detail %}
+                                            <td class="bg-white/5 ">{{ detail.course }}</td>
+                                            <td class="bg-white/5 ">{{ detail.room }}</td>
+                                            <td class="bg-white/5 ">{{ detail.faculty }}</td>
+                                        {% else %}
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% else %}
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                {% endif %}
+                            {% endfor %}
+                        {% endwith %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    const slider = document.getElementById('scrollContainer');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.classList.add('cursor-grabbing');
+        slider.classList.remove('cursor-grab');
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+        e.preventDefault();
+    });
+
+    slider.addEventListener('mouseleave', () => {
+        isDown = false;
+        slider.classList.add('cursor-grab');
+        slider.classList.remove('cursor-grabbing');
+    });
+
+    slider.addEventListener('mouseup', () => {
+        isDown = false;
+        slider.classList.add('cursor-grab');
+        slider.classList.remove('cursor-grabbing');
+    });
+
+    slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2; // scroll speed
+        slider.scrollLeft = scrollLeft - walk;
+    });
+</script>
+
+
+
+<div id="ourServices" class="relative isolate overflow-hidden bg-gray-900 py-24 sm:py-32 z-30">
+    <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&crop=focalpoint&fp-y=.8&w=2830&h=1500&q=80&blend=111827&sat=-100&exp=15&blend-mode=multiply" alt="" class="absolute inset-0 -z-10 size-full object-cover object-right md:object-center" />
+    <div class="hidden sm:absolute sm:-top-10 sm:right-1/2 sm:-z-10 sm:mr-10 sm:block sm:transform-gpu sm:blur-3xl" aria-hidden="true">
+        <div class="aspect-1097/845 w-274.25 bg-linear-to-tr from-[#ff4694] to-[#776fff] opacity-20" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+    </div>
+    <div class="absolute -top-52 left-1/2 -z-10 -translate-x-1/2 transform-gpu blur-3xl sm:top-[-28rem] sm:ml-16 sm:translate-x-0 sm:transform-gpu" aria-hidden="true">
+        <div class="aspect-1097/845 w-274.25 bg-linear-to-tr from-[#ff4694] to-[#776fff] opacity-20" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+    </div>
+    <div class="mx-auto max-w-7xl px-2 md:px-8">
+        <div class="mx-auto max-w-2xl lg:mx-0">
+            <h2 class="text-3xl font-semibold tracking-tight text-white md:text-7xl">Work with us</h2>
+            <p class="mt-8 font-medium text-pretty text-gray-300 text-sm md:text-lg">We are always looking for passionate and talented individuals to join our team. If you're driven, creative, and ready to make an impact, we'd love to hear from you!</p>
+        </div>
+        <div class="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none">
+        <div class="grid grid-cols-1 gap-x-8 gap-y-4 md:gap-y-6 text-sm md:text-lg font-semibold text-white sm:grid-cols-2 md:flex lg:gap-x-10">
+            <a href="#">Open roles <span aria-hidden="true">&rarr;</span></a>
+            <a href="#">Internship program <span aria-hidden="true">&rarr;</span></a>
+            <a href="#">Our values <span aria-hidden="true">&rarr;</span></a>
+            <a href="#">Meet our leadership <span aria-hidden="true">&rarr;</span></a>
+        </div>
+        <dl class="mt-16 grid grid-cols-1 galp2 md:gap-8 sm:mt-20 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="flex flex-col-reverse gap-1 py-8 items-center bg-pink-500/10 backdrop-blur-sm rounded">
+                <dt class="text-sm md:text-lg text-gray-300">Universities</dt>
+                <dd class="text-4xl font-semibold tracking-tight text-white">50+</dd>
+                </div>
+            <div class="flex flex-col-reverse gap-1 py-8 items-center bg-white/10 backdrop-blur-sm rounded">
+                <dt class="text-sm md:text-lg text-gray-300">Students</dt>
+                <dd class="text-4xl font-semibold tracking-tight text-white">3000+</dd>
+            </div>
+            <div class="flex flex-col-reverse gap-1 py-8 items-center bg-pink-500/10 backdrop-blur-sm rounded">
+                <dt class="text-sm md:text-lg text-gray-300">Suports</dt>
+                <dd class="text-4xl font-semibold tracking-tight text-white">100+</dd>
+            </div>
+            <div class="flex flex-col-reverse gap-1 py-8 items-center bg-white/10 backdrop-blur-sm rounded">
+                <dt class="text-sm md:text-lg text-gray-300">Paid time off</dt>
+                <dd class="text-4xl font-semibold tracking-tight text-white">Unlimited</dd>
+            </div>
+        </dl>
+        </div>
+    </div>
+</div>
+
+
+<div id="aboutUs" class="bg-gray-900 py-24 sm:py-32 z-20 relative">
+    <div class="fixed w-full top-0 left-0 -z-10">
+			<div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+				<div class="relative left-[calc(50%-11rem)] aspect-1155/678 w-144.5 -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-288.75" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+			</div>
+			<div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" aria-hidden="true">
+				<div class="relative left-[calc(50%+3rem)] aspect-1155/678 w-144.5 -translate-x-1/2 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-288.75" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+			</div>
+
+			<video
+				class="w-screen h-screen absolute top-0 left-0 -z-30 object-cover opacity-20"
+				src="/static/assets/background/bg_vid.mp4"
+				autoplay
+				muted
+				loop
+			></video>
+		</div>
+    <div class="mx-auto max-w-7xl px-2 md:px-8">
+        <div class="mx-auto max-w-2xl lg:text-center">
+            <h2 class="text-3xl font-semibold tracking-tight text-white md:text-7xl">About us</h2>
+            <p class="mt-6 text-sm md:text-lg text-white/50">Welcome to our Routine Platform — a simple and smart way to manage your daily class schedules. Designed to help students and educators stay organized, our system makes it easy to view, share, and update routines anytime, from any device.
+
+            Whether you're checking today's classes or planning your week ahead, our goal is to provide a clear, reliable, and user-friendly experience.
+
+            Stay on track. Stay ahead.</p>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

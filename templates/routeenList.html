@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static tailwind_tags %}
+{% block title %}| Routeen List{% endblock %}
+
+{% block content %}
+<div class="min-h-[600px] p-3 md:p-6 w-full md:max-w-4xl mx-auto max-md:pt-20 md:pt-32">
+    <div class="flex flex-col items-center gap-1 mb-6">
+        <h1 class="max-md:text-xl md:text-3xl font-semibold text-white  text-center">Your Routeens</h1>
+        <hr class="w-[80%] md:w-[50%]">
+        {% if request.user.is_CR or request.user.is_staff or request.user.is_superuser %}
+        <a href="{% url 'add_routeen' %}" class="w-40 md:w-60 h-7 md:h-9 flex justify-center items-center rounded-full bg-pink-500/20 hover:bg-pink-500/70 text-xs md:text-sm border-[1px] border-white/30 mt-1">Add Rouutine</a>
+        {% endif %}
+    </div>
+
+    {% if routeens %}
+        <div class="flex flex-col gap-4">
+        {% for routeen in routeens %}
+            <div class="flex justify-between items-center relative">
+                <a href="{% url 'routeen' routeen.pk %}" class="w-full">
+                    <div class="bg-white/10 rounded-md p-4 hover:bg-white/20 transition cursor-pointer">
+                        <p class="text-white/90 font-semibold text-sm md:text-xl hover:underline">
+                            {{ routeen.title }}
+                        </p>
+                        <p class="text-[10px] md:text-sm text-white/60 mt-1">Uploaded on {{ routeen.created_at|date:"F j, Y" }}</p>
+                        <p class="text-[10px] md:text-sm text-white/50">Department: {{ routeen.department.name }}, Batch: {{ routeen.batch.name }}</p>
+                    </div>
+                </a>
+                {% if request.user.is_CR or request.user.is_staff or request.user.is_superuser %}
+                <a href="{% url 'edit_routeen' routeen.pk  %}" class="px-5 md:px-7 h-5 md:h-7 flex justify-center items-center rounded-full bg-pink-500/20 hover:bg-pink-500/70 text-[10px] md:text-[12px] border-[1px] border-white/30 absolute right-2 max-md:top-2 md:right-5">Edit</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-white/70 text-center mt-20 text-lg">No routeens found for your department and batch.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

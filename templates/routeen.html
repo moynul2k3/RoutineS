@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static tailwind_tags %}
+{% block title %}| Routeen{% endblock %}
+
+{% block content %}
+<div class="h-full pt-32 px-4 pb-20 w-full mx-auto z-30">
+    {% if routeen.pdf_file %}
+        <div class="w-full h-full md:w-[70vw] mx-auto rounded-xl shadow-md p-4 relative">
+            <a href="{{ routeen.pdf_file.url }}" download class="text-white max-md:text-xs max-md:py-1 max-md:px-5 md:py-2 px-10 rounded-sm bg-indigo-600 absolute top-0 right-0">
+                Download PDF
+            </a>
+            <div class="w-full h-full mx-auto">
+                <canvas id="pdf-render" class="w-full h-full border rounded "></canvas>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+
+<script>
+    const url = "{{ routeen.pdf_file.url }}";
+    let pdfDoc = null,
+        pageNum = 1,
+        canvas = document.getElementById('pdf-render'),
+        ctx = canvas.getContext('2d');
+
+    pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
+        pdfDoc = pdfDoc_;
+        renderPage(pageNum);
+    });
+
+    function renderPage(num) {
+        pdfDoc.getPage(num).then(page => {
+        const viewport = page.getViewport({ scale: 5 });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+            canvasContext: ctx,
+            viewport: viewport
+        };
+        page.render(renderContext);
+        });
+    }
+</script>
+{% endblock %}

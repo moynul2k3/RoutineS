@@ -1,0 +1,97 @@
+{% load static tailwind_tags %}
+<header class="fixed inset-x-0 top-0 z-50  backdrop-blur-xl h-16 max-md:h-14 ">
+    <nav class="flex items-center justify-between h-full px-2 lg:px-8 w-full relative">
+        <div class="flex-1">
+            <a href="/" class="-m-1.5 p-1.5">
+            <p class="max-md:text-xl md:text-3xl font-bold tracking-tight"><span class="text-pink-500">Routine</span>S</p>
+        </div>
+        <div class="flex justify-center items-center gap-10 max-lg:hidden flex-1">
+            <a href="{% url 'home' %}#" class="text-sm/6 font-semibold text-white/90 flex flex-col justify-center items-center group">
+                <span class="px-4">Home</span>
+                <hr class="w-0 group-hover:w-full bg-white h-[2px] border-0 transition-all ease-in-out duration-200">
+            </a>
+            <a href={% url "routeenlist" %} class="text-sm/6 font-semibold text-white/90 flex flex-col justify-center items-center group">
+                <span class="px-4">My Routine</span>
+                <hr class="w-0 group-hover:w-full bg-white h-[2px] border-0 transition-all ease-in-out duration-200">
+            </a>
+            <a href="{% url 'home' %}#ourServices" class="text-sm/6 font-semibold text-white/90 flex flex-col justify-center items-center group">
+                <span class="px-4">Our Services</span>
+                <hr class="w-0 group-hover:w-full bg-white h-[2px] border-0 transition-all ease-in-out duration-200">
+            </a>
+            <a href="{% url 'home' %}#aboutUs" class="text-sm/6 font-semibold text-white/90 flex flex-col justify-center items-center group">
+                <span class="px-4">About Us</span>
+                <hr class="w-0 group-hover:w-full bg-white h-[2px] border-0 transition-all ease-in-out duration-200">
+            </a>
+        </div>
+        <div class="flex justify-end items-center gap-3 md:gap-5 flex-1">
+            {% if request.user.is_authenticated %}
+                <button id="userBtn" class="h-8 md:h-10 w-8 md:w-10 flex justify-center items-center border-[1px] border-white/30 rounded-full">
+                    <i class='bx  bx-user text-lg md:text-2xl text-pink-400'  ></i> 
+                </button>
+                <div id="userDropdown" class="h-auto w-[300px] md:w-[400px] bg-gradient-to-bl from-[#ff61b0] to-[#5D1F3E] absolute top-[100%] md:right-5 z-50 hidden rounded-xl p-8">
+                    <div class="w-full flex justify-center items-center relative">
+                        <img src="{% if request.user.university.logo %}{{ request.user.university.logo.url }}{% else %}{% static 'assets/image/user.png' %}{% endif %}" alt="" class="h-32 w-32 bg-white rounded-full border-[2px] border-white/70">
+                        <div class="absolute -top-4 -right-4 text-sm shadow-md shadow-black/5 border-[1px] border-white/20 font-extrabold flex flex-col justify-start items-end leading-4 bg-[#ff61b0] px-5 py-2 rounded-2xl">
+                            <span>{% if request.user.is_CR %}CR{% endif %}</span>
+                            <span>{% if request.user.is_staff %}STAFF{% endif %}</span>
+                            <span>{% if request.user.is_superuser %}MANAGER{% endif %}</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-start items-center mt-5">
+                        <p class="text-xs text-center  px-4 py-1 rounded-full bg-white/5 border-[1px] border-white/10">{{ request.user.REG_no }}</p>
+                        <p class="text-lg text-center mt-3">{{ request.user.name }}</p>
+                        <p class="text-sm text-center">{{ request.user.department.name }}</p>
+                        <p class="text-sm text-center">{{ request.user.batch.name }}</p>
+                    </div>
+                    <!-- View Universities -->
+                    <a href="{% url 'university_detail_view' %}" class="text-xs md:text-sm font-semibold text-white  w-3/5 mx-auto py-1  bg-black/30 border-[2px] border-white/20 rounded-full flex justify-center items-center mt-4 transition-all ease-in-out duration-200 group">
+                        <p class="max-md:text-xs md:text-sm font-bold tracking-tight flex justify-center items-center gap-2">
+                            <span>View</span>  
+                            <span class="text-pink-500 group-hover:text-white transition-all ease-in-out duration-200">University&rarr;</span>
+                        </p> 
+                    </a>
+                    
+                    <!-- Logout -->
+                    <a href="{% url 'logout' %}" class="text-xs md:text-sm font-semibold text-white/90 w-full h-10 bg-white/40 hover:bg-white/60 rounded-lg flex justify-center items-center mt-4 transition-all ease-in-out duration-200">Log Out <span aria-hidden="true">&rarr;</span></a>
+                </div>
+            {% else %}
+                <a href="{% url 'signin' %}" class="text-xs md:text-lg font-semibold text-white/90">Log in <span aria-hidden="true">&rarr;</span></a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <script>
+        const button = document.getElementById('userBtn');
+        const dropdown = document.getElementById('userDropdown');
+
+        button.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent the click from bubbling to the document
+            dropdown.classList.toggle('hidden');
+        });
+
+        // Prevent clicks inside the dropdown from closing it
+        dropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Close the dropdown when clicking outside
+        document.addEventListener('click', () => {
+            dropdown.classList.add('hidden');
+        });
+    </script>
+</header>
+
+<nav class="fixed bottom-0 h-14 w-full z-50 backdrop-blur-sm bg-pink-500/10  flex justify-evenly items-center lg:hidden">
+    <a href={% url "routeenlist" %} class=" text-white/90 flex flex-col justify-center items-center ">
+        <i class='bx  bx-file-detail text-xl font-thin'  ></i> 
+        <p class="text-[10px] font-semibold text-pink-100 ">Routine</p>
+    </a>
+    <a href="/" class=" text-white/90 flex flex-col justify-center items-center">
+        <i class='bx  bx-home text-xl font-thin'  ></i> 
+        <p class="text-[10px] font-semibold text-pink-100 ">Home</p>
+    </a>
+    <a href={% url "my_shedule" %} class=" text-white/90 flex flex-col justify-center items-center">
+        <i class='bx  bx-calendar-alt text-xl font-thin'></i> 
+        <p class="text-[10px] font-semibold text-pink-100 ">Shedule</p>
+    </a>
+</nav>
