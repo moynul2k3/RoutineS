@@ -7,4 +7,5 @@ urlpatterns = [
     path('ajax/get-department/<int:university_id>/', views.get_department, name='get_department'),
     path('ajax/get-batches/<int:department_id>/', views.get_batches, name='get_batches'),
     path('logout/', views.logout_view, name='logout'),
+    path('edit-profile/', views.edit_profile, name='edit_profile'),
 ]

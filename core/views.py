@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from home.models import *
 from django.http import JsonResponse
 from django.contrib import messages
@@ -94,3 +95,31 @@ def get_batches(request, department_id):
 def logout_view(request):
     logout(request)
     return redirect('/')
+
+
+
+@login_required(login_url='signin') 
+def edit_profile(request):
+    user = request.user
+
+    if request.method == 'POST':
+        user.name = request.POST.get('name')
+        user.email = request.POST.get('email')
+        user.reg = request.POST.get('reg')
+        user.university_id = request.POST.get('university')
+        user.department_id = request.POST.get('department')
+        user.batch_id = request.POST.get('batch')
+        user.save()
+        messages.success(request, "Profile updated successfully!")
+        return redirect('/')
+
+    universities = University.objects.all()
+    departments = Department.objects.filter(university=user.university) if user.university else []
+    batches = Batch.objects.filter(department=user.department) if user.department else []
+
+    return render(request, 'edit_profile.html', {
+        'universities': universities,
+        'departments': departments,
+        'batches': batches,
+        'user': user,
+    })

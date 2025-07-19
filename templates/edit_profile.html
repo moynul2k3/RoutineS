@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load static tailwind_tags %}
+{% block title %}| Edit Profile{% endblock %}
+
+{% block content %}
+<div class="relative isolate max-md:px-2 md:px-6 py-32 lg:px-8 flex flex-col justify-center items-center">
+    <div class="flex flex-col items-center gap-1 mb-6 w-full">
+        <h1 class="max-md:text-xl md:text-3xl font-semibold text-white text-center">Edit your profile</h1>
+        <hr class="w-[90%] md:w-[50%]">
+        <p class="text-center text-xs text-white/70">Update your information carefully.</p>
+    </div>
+
+    <div class="mt-10 sm:mx-auto w-full md:max-w-[30%] px-4">
+        <form class="space-y-4 w-full" method="POST" action="{% url 'edit_profile' %}">
+            {% csrf_token %}
+            <div>
+                <label for="name" class="block text-sm font-medium text-white/90">Name</label>
+                <input type="text" name="name" id="name" value="{{ user.name }}" required
+                       class="mt-2 block w-full rounded-md bg-white/10 px-3 py-1.5 text-base text-white/90 placeholder:text-white/30 sm:text-sm border-white/10 focus:border-white/10 outline-none">
+            </div>
+
+            <div>
+                <label for="email" class="block text-sm font-medium text-white/90">Email</label>
+                <input type="email" name="email" id="email" value="{{ user.email }}" required
+                       class="mt-2 block w-full rounded-md bg-white/10 px-3 py-1.5 text-base text-white/90 placeholder:text-white/30 sm:text-sm border-white/10 focus:border-white/10 outline-none">
+            </div>
+
+            <div>
+                <label for="reg" class="block text-sm font-medium text-white/90">Registration ID</label>
+                <input type="text" name="reg" id="reg" value="{{ user.REG_no }}" required
+                       class="mt-2 block w-full rounded-md bg-white/10 px-3 py-1.5 text-base text-white/90 placeholder:text-white/30 sm:text-sm border-white/10 focus:border-white/10 outline-none">
+            </div>
+
+            <div class="w-full">
+                <label for="university" class="block text-sm font-medium text-white/90">University</label>
+                <div class="mt-2">
+                    <select name="university" id="university" required
+                        class="block w-full rounded-md bg-white/10 px-1 py-2 text-base text-white/90 sm:text-sm border-white/10 focus:border-white/10 outline-none focus:outline-none focus:bg-gray-900">
+                        {% if user.university %}
+                            <option value="{{ user.university.id }}" selected>{{ user.university.name }}</option>
+                        {% else %}
+                            <option value="" disabled selected>Select your university</option>
+                        {% endif %}
+                        {% for university in universities %}
+                            <option value="{{ university.id }}">{{ university.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-between gap-3">
+                <!-- Department Select -->
+                <div class="w-2/3">
+                    <label for="department" class="block text-sm font-medium text-white/90">Department</label>
+                    <div class="mt-2">
+                        <select name="department" id="department" required disabled
+                            class="block w-full rounded-md bg-white/10 px-1 py-2 text-base text-white/90 sm:text-sm border-white/10 focus:border-white/10 outline-none focus:outline-none focus:bg-gray-900">
+                            {% if user.department %}
+                                <option value="{{ user.department.id }}" selected>{{ user.department.name }}</option>
+                            {% else %}
+                                <option value="" disabled selected>Select university first</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Batch Select -->
+                <div class="w-1/3">
+                    <label for="batch" class="block text-sm font-medium text-white/90">Batch</label>
+                    <div class="mt-2">
+                        <select name="batch" id="batch" required disabled
+                            class="block w-full rounded-md bg-white/10 px-1 py-2 text-base text-white/90 sm:text-sm border-white/10 focus:border-white/10 outline-none focus:outline-none focus:bg-gray-900">
+                            {% if user.batch %}
+                                <option value="{{ user.batch.id }}" selected>{{ user.batch.name }}</option>
+                            {% else %}
+                                <option value="" disabled selected>Select department first</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit"
+                        class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                    Update Profile
+                </button>
+            </div>
+        </form>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mt-4 text-center text-sm {% if message.tags == 'success' %}text-green-500{% elif message.tags == 'error' %}text-red-500{% else %}text-white{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+
+<script>
+    document.getElementById('university').addEventListener('change', function () {
+        const universityId = this.value;
+        const departmentSelect = document.getElementById('department');
+
+        // Clear existing options
+        departmentSelect.innerHTML = '<option disabled selected>Loading...</option>';
+        departmentSelect.disabled = true;
+
+        fetch(`/ajax/get-department/${universityId}/`)
+            .then(response => response.json())
+            .then(data => {
+                departmentSelect.innerHTML = '<option disabled selected>Select a department</option>';
+                data.department.forEach(department => {
+                    const option = document.createElement('option');
+                    option.value = department.id;
+                    option.textContent = department.name;
+                    departmentSelect.appendChild(option);
+                });
+                departmentSelect.disabled = false;
+            })
+            .catch(err => {
+                departmentSelect.innerHTML = '<option disabled selected>Failed to load</option>';
+                console.error(err);
+            });
+    });
+
+
+
+    document.getElementById('department').addEventListener('change', function () {
+        const departmentId = this.value;
+        const batchSelect = document.getElementById('batch');
+
+        // Clear existing options
+        batchSelect.innerHTML = '<option disabled selected>Loading...</option>';
+        batchSelect.disabled = true;
+
+        fetch(`/ajax/get-batches/${departmentId}/`)
+            .then(response => response.json())
+            .then(data => {
+                batchSelect.innerHTML = '<option disabled selected>Select a batch</option>';
+                data.batches.forEach(batch => {
+                    const option = document.createElement('option');
+                    option.value = batch.id;
+                    option.textContent = batch.name;
+                    batchSelect.appendChild(option);
+                });
+                batchSelect.disabled = false;
+            })
+            .catch(err => {
+                batchSelect.innerHTML = '<option disabled selected>Failed to load</option>';
+                console.error(err);
+            });
+    });
+</script>
+
+{% endblock %}
