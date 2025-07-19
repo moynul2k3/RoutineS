@@ -101,7 +101,6 @@ def logout_view(request):
 @login_required(login_url='signin') 
 def edit_profile(request):
     user = request.user
-
     if request.method == 'POST':
         user.name = request.POST.get('name')
         user.email = request.POST.get('email')
@@ -111,7 +110,7 @@ def edit_profile(request):
         user.batch_id = request.POST.get('batch')
         user.save()
         messages.success(request, "Profile updated successfully!")
-        return redirect('/')
+        return redirect('home')
 
     universities = University.objects.all()
     departments = Department.objects.filter(university=user.university) if user.university else []
