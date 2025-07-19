@@ -103,7 +103,7 @@ def edit_profile(request):
     user = request.user
     if request.method == 'POST':
         user.name = request.POST.get('name')
-        user.email = request.POST.get('email')
+        # user.email = request.POST.get('email')
         user.reg = request.POST.get('reg')
         user.university_id = request.POST.get('university')
         user.department_id = request.POST.get('department')
