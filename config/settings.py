@@ -203,11 +203,11 @@ CSRF_TRUSTED_ORIGINS = [
 #     DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "mail.bikoallinone.com"           # ✅ SMTP server
-EMAIL_PORT = 587                         # ✅ STARTTLS port
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False                    # ⚠️ Not both TLS and SSL
-EMAIL_HOST_USER = "customerbiko@bikoallinone.com"  # ✅ Use a valid mailbox from mail.moynul.com
-EMAIL_HOST_PASSWORD = "Bikoallinone@MRJ"        # ✅ Use the correct mailbox password
+
+EMAIL_HOST_USER = 'moynul.officials@gmail.com'           # ✅ Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'tkstpmllwvqtvtnx'     # ✅ Replace with Gmail app password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
