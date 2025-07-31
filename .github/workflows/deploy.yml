@@ -2,7 +2,7 @@ name: 🚀 Auto Deploy Django
 
 on:
   push:
-    branches: [ main ]  # or "master" or any branch you deploy from
+    branches: [main]  # Replace 'main' with your branch if different
 
 jobs:
   deploy:
@@ -10,22 +10,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: ⬇️ Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.routine_solution_deploy }}
+      - name: 🔐 Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.ROUTINE_SOLUTION_DEPLOY }}
 
-    - name: Copy Code to Server
-      run: |
-        ssh -o StrictHostKeyChecking=no routine@203.161.50.74 << 'EOF'
-          cd /home/routine/RoutineS
-          git pull origin main
-          source menv/bin/activate
-          pip install -r requirements.txt
-          python manage.py migrate
-          python manage.py collectstatic --noinput
-          sudo systemctl restart routine.solution.service
-        EOF
+      - name: 🚀 Deploy Django Project
+        run: |
+          ssh -o StrictHostKeyChecking=no routine@203.161.50.74 << 'EOF'
+            cd /home/routine/RoutineS
+            git pull origin main
+            source menv/bin/activate
+            pip install -r requirements.txt
+            python manage.py migrate --noinput
+            python manage.py collectstatic --noinput
+            sudo systemctl restart routine.solution.service
+          EOF
