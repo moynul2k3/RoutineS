@@ -3,6 +3,10 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.static import serve
+import environ
+env = environ.Env()
+environ.Env.read_env()
+DEBUG = env.bool('DEBUG', default=False)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -10,8 +14,12 @@ urlpatterns = [
     path('', include("core.urls")),
     path('', include("my_routine.urls")),
 
-    # path("__reload__/", include("django_browser_reload.urls")),
 ]
+
+if DEBUG:
+    urlpatterns += [
+        path("__reload__/", include("django_browser_reload.urls")),
+    ]
 
 
 # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
