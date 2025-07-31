@@ -11,91 +11,125 @@
     </div>
 
     <div class="mt-10 sm:mx-auto w-full md:max-w-[30%] px-4">
-        <form class="space-y-4 w-full" action="." method="POST" >
+        <form id="registration-form" class="space-y-4 w-full" action="." method="POST" >
             {% csrf_token %}
-            <div>
-                <label for="name" class="block text-sm/6 font-medium text-white/90">Name</label>
-                <div class="mt-2">
-                <input type="text" name="name" id="name" autocomplete="name" required class="block w-full rounded-md bg-white/10 px-3 py-1.5 text-base text-white/90 placeholder:text-white/30 sm:text-sm/6 border-white/10 focus:border-white/10 outline-none focus:outline-none" />
-                </div>
-            </div>
-
-            <div>
-                <label for="email" class="block text-sm/6 font-medium text-white/90">Email address</label>
-                <div class="mt-2">
-                <input type="email" name="email" id="email" autocomplete="email" required class="block w-full rounded-md bg-white/10 px-3 py-1.5 text-base text-white/90 placeholder:text-white/30 sm:text-sm/6 border-white/10 focus:border-white/10 outline-none focus:outline-none" />
-                </div>
-            </div>
-
-            <div>
-                <label for="reg" class="block text-sm/6 font-medium text-white/90">Registration ID</label>
-                <div class="mt-2">
-                <input type="text" name="reg" id="reg" required class="block w-full rounded-md bg-white/10 px-3 py-1.5 text-base text-white/90 placeholder:text-white/30 sm:text-sm/6 border-white/10 focus:border-white/10 outline-none focus:outline-none" />
-                </div>
-            </div>
-
-            <div class="w-full">
-                <label for="university" class="block text-sm font-medium text-white/90">University</label>
-                <div class="mt-2">
-                    <select name="university" id="university" required
-                        class="block w-full rounded-md bg-white/10 px-1 py-2 text-base text-white/90 sm:text-sm border-white/10 focus:border-white/10 outline-none focus:outline-none focus:bg-gray-900">
-                        <option value="" disabled selected>Select Your university</option>
-                        {% for university in universities %}
-                            <option value="{{ university.id }}">{{ university.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
-            <div class="flex justify-between gap-3">
-                <!-- Department Select -->
-                <div class="w-2/3">
-                    <label for="department" class="block text-sm font-medium text-white/90">Department</label>
+            <div id="step1" class="space-y-4 w-full">
+                <div>
+                    <label for="name" class="block text-sm/6 font-medium text-white/90">Name</label>
                     <div class="mt-2">
-                        <select name="department" id="department" required disabled
+                    <input type="text" name="name" id="name" autocomplete="name" required class="block w-full rounded-md bg-white/10 px-3 py-1.5 text-base text-white/90 placeholder:text-white/30 sm:text-sm/6 border-white/10 focus:border-white/10 outline-none focus:outline-none" />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm/6 font-medium text-white/90">Email address</label>
+                    <div class="mt-2">
+                    <input type="email" name="email" id="email" autocomplete="email" required class="block w-full rounded-md bg-white/10 px-3 py-1.5 text-base text-white/90 placeholder:text-white/30 sm:text-sm/6 border-white/10 focus:border-white/10 outline-none focus:outline-none" />
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between">
+                    <label for="password" class="block text-sm/6 font-medium text-white/90">Password</label>
+                    </div>
+                    <div class="mt-2">
+                    <input type="password" name="password" id="password" autocomplete="current-password" required class="block w-full rounded-md bg-white/10 px-3 py-1.5 text-base text-white/90 placeholder:text-white/30 sm:text-sm/6 border-white/10 focus:border-white/10 outline-none focus:outline-none" />
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between">
+                        <label for="confirm_password" class="block text-sm/6 font-medium text-white/90">Confirm Password</label>
+                    </div>
+                    <div class="mt-2">
+                        <input type="password" name="confirm_password" id="confirm_password" autocomplete="current-password" required class="block w-full rounded-md bg-white/10 px-3 py-1.5 text-base text-white/90 placeholder:text-white/30 sm:text-sm/6 border-white/10 focus:border-white/10 outline-none focus:outline-none" />
+                    </div>
+                </div>
+
+
+                
+                <div class="mt-10">
+                    <p id="step1-error" class="text-red-400 text-sm hidden text-center mb-4"></p>
+                    <button type="button" onclick="sendOTP()" class="flex w-full justify-center rounded-md bg-pink-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-pink-500 cursor-pointer">Registration</button>
+                </div>
+            </div>
+
+            <!-- 2nd step -->
+            <div id="step2" class="space-y-4 w-full hidden">
+                <div>
+                    <div class="flex items-center justify-between">
+                        <label for="otp" class="block text-sm/6 font-medium text-white/90">Enter OTP</label>
+                    </div>
+                    <div class="mt-2">
+                        <input type="text" name="otp" id="otp" required class="block w-full rounded-md bg-white/10 px-3 py-1.5 text-base text-white/90 placeholder:text-white/30 sm:text-lg border-white/10 focus:border-white/10 outline-none focus:outline-none text-center tracking-widest" />
+                    </div>
+                </div>
+                <div class="mt-10">
+                    <p id="step2-error" class="text-red-400 text-sm hidden text-center mb-4"></p>
+                    <div class="flex justify-between items-center gap-3">
+                        <button type="button" class="px-3 py-1.5 bg-pink-400 text-white flex justify-center items-center cursor-pointer rounded-md"><i class='bx  bx-arrow-left-stroke text-xl'  ></i> </button>
+                        <button type="button" onclick="verifyOTP()" class="flex w-full justify-center rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-emerald-500 cursor-pointer">Verify OTP</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- 3rd step -->
+            <div id="step3" class="space-y-4 w-full hidden">
+                <div>
+                    <label for="reg" class="block text-sm/6 font-medium text-white/90">Registration ID</label>
+                    <div class="mt-2">
+                    <input type="text" name="reg" id="reg" required class="block w-full rounded-md bg-white/10 px-3 py-1.5 text-base text-white/90 placeholder:text-white/30 sm:text-sm/6 border-white/10 focus:border-white/10 outline-none focus:outline-none" />
+                    </div>
+                </div>
+                <div class="w-full">
+                    <label for="university" class="block text-sm font-medium text-white/90">University</label>
+                    <div class="mt-2">
+                        <select name="university" id="university" required
                             class="block w-full rounded-md bg-white/10 px-1 py-2 text-base text-white/90 sm:text-sm border-white/10 focus:border-white/10 outline-none focus:outline-none focus:bg-gray-900">
-                            <option value="" disabled selected>Select university first</option>
-                            <!-- {% for dept in departments %}
-                                <option value="{{ dept.id }}">{{ dept.name }}</option>
-                            {% endfor %} -->
+                            <option value="" disabled selected>Select Your university</option>
+                            {% for university in universities %}
+                                <option value="{{ university.id }}">{{ university.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
 
-                <!-- Batch Select -->
-                <div class="w-1/3">
-                    <label for="batch" class="block text-sm font-medium text-white/90">Batch</label>
-                    <div class="mt-2">
-                        <select name="batch" id="batch" required disabled
-                            class="block w-full rounded-md bg-white/10 px-1 py-2 text-base text-white/90 sm:text-sm border-white/10 focus:border-white/10 outline-none focus:outline-none focus:bg-gray-900">
-                            <option value="" disabled selected>Select department first</option>
-                        </select>
+                <div class="flex justify-between gap-3">
+                    <!-- Department Select -->
+                    <div class="w-2/3">
+                        <label for="department" class="block text-sm font-medium text-white/90">Department</label>
+                        <div class="mt-2">
+                            <select name="department" id="department" required disabled
+                                class="block w-full rounded-md bg-white/10 px-1 py-2 text-base text-white/90 sm:text-sm border-white/10 focus:border-white/10 outline-none focus:outline-none focus:bg-gray-900">
+                                <option value="" disabled selected>Select university first</option>
+                                <!-- {% for dept in departments %}
+                                    <option value="{{ dept.id }}">{{ dept.name }}</option>
+                                {% endfor %} -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Batch Select -->
+                    <div class="w-1/3">
+                        <label for="batch" class="block text-sm font-medium text-white/90">Batch</label>
+                        <div class="mt-2">
+                            <select name="batch" id="batch" required disabled
+                                class="block w-full rounded-md bg-white/10 px-1 py-2 text-base text-white/90 sm:text-sm border-white/10 focus:border-white/10 outline-none focus:outline-none focus:bg-gray-900">
+                                <option value="" disabled selected>Select department first</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-
-            <div>
-                <div class="flex items-center justify-between">
-                <label for="password" class="block text-sm/6 font-medium text-white/90">Password</label>
-                </div>
-                <div class="mt-2">
-                <input type="password" name="password" id="password" autocomplete="current-password" required class="block w-full rounded-md bg-white/10 px-3 py-1.5 text-base text-white/90 placeholder:text-white/30 sm:text-sm/6 border-white/10 focus:border-white/10 outline-none focus:outline-none" />
+                <div class="mt-10">
+                    <button type="submit" class="flex w-full justify-center rounded-md bg-pink-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-pink-500">Complete</button>
                 </div>
             </div>
 
-            <div>
-                <div class="flex items-center justify-between">
-                <label for="confirm_password" class="block text-sm/6 font-medium text-white/90">Confirm Password</label>
-                </div>
-                <div class="mt-2">
-                <input type="password" name="confirm_password" id="confirm_password" autocomplete="current-password" required class="block w-full rounded-md bg-white/10 px-3 py-1.5 text-base text-white/90 placeholder:text-white/30 sm:text-sm/6 border-white/10 focus:border-white/10 outline-none focus:outline-none" />
-                </div>
-            </div>
-
-            <div>
+            <!-- <div class="mt-10">
                 <button type="submit" class="flex w-full justify-center rounded-md bg-pink-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-pink-500/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-600">Register</button>
-            </div>
+            </div> -->
         </form>
 
         <p class="mt-10 text-center text-sm/6 text-white/50">
@@ -136,6 +170,103 @@
 {% endfor %}
 
 
+
+<script>
+    function showError(message, targetId = "step1-error") {
+    const errorBox = document.getElementById(targetId);
+    errorBox.textContent = message;
+    errorBox.classList.remove("hidden");
+
+    setTimeout(() => {
+        errorBox.classList.add("hidden");
+        errorBox.textContent = "";
+    }, 3000);
+}
+
+
+    function sendOTP() {
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const confirmPassword = document.getElementById("confirm_password").value.trim();
+
+        // Validate inputs
+        if (!name || !email || !password || !confirmPassword) {
+            showError("Please fill in all fields.", "step1-error");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            showError("Passwords do not match.", "step1-error");
+            return;
+        }
+
+        // Proceed to send OTP
+        fetch("{% url 'send_otp' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ name, email, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "ok") {
+                document.getElementById("step1").classList.add("hidden");
+                document.getElementById("step2").classList.remove("hidden");
+            } else {
+                showError(data.message || "Failed to send OTP.", "step1-error");
+            }
+        })
+        .catch(() => {
+            showError("Something went wrong while sending OTP.", "step1-error");
+        });
+    }
+
+    function verifyOTP() {
+        const otp = document.getElementById("otp").value;
+
+        fetch("{% url 'verify_otp' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ otp })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "verified") {
+                document.getElementById("step2").classList.add("hidden");
+                document.getElementById("step3").classList.remove("hidden");
+            } else {
+                showError("Invalid OTP!", "step2-error");
+            }
+        })
+        .catch(() => {
+            showError("Something went wrong during verification.", "step2-error");
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll("#step1 input").forEach(input => {
+            input.addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    sendOTP();
+                }
+            });
+        });
+
+        document.getElementById("otp").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                verifyOTP();
+            }
+        });
+    });
+</script>
 
 
 

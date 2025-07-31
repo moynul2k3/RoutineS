@@ -8,6 +8,11 @@ UserAccount = get_user_model() # adjust import as needed
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 
+import random
+from django.core.mail import send_mail
+from django.views.decorators.csrf import csrf_exempt
+import json
+
 def sign_in(request):
     if request.method == 'POST':
         identifier = request.POST.get('email')  # this field holds email or REG_no
@@ -122,3 +127,99 @@ def edit_profile(request):
         'batches': batches,
         'user': user,
     })
+
+
+
+
+
+
+@csrf_exempt
+def send_otp(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        email = data.get("email")
+        otp = random.randint(100000, 999999)
+
+        # Store in session (you could use DB or cache too)
+        request.session['otp'] = str(otp)
+        request.session['user_info'] = {
+            "name": data.get("name"),
+            "email": email,
+            "password": data.get("password"),
+        }
+        print('Verify OTP: ',otp)
+
+
+        html_message = f"""
+            <html>
+                <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 20px;">
+                    <table align="center" width="100%" style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        <tr>
+                            <td style="padding: 20px; text-align: center; background-color: #4a3aff; color: #ffffff; border-radius: 8px 8px 0 0;">
+                                <h1>RoutineS - Email Verification</h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 20px; text-align: left; color: #333333;">
+                                <p>Hi there,</p>
+                                <p>Thank you for signing up with <strong>RoutineS</strong>. Please verify your email address by using the OTP below:</p>
+                                <p style="text-align: center; margin: 30px 0;">
+                                    <span style="display: inline-block; padding: 12px 24px; background-color: #4a3aff; color: #ffffff; border-radius: 6px; font-size: 24px; font-weight: bold; letter-spacing: 2px;">
+                                        {otp}
+                                    </span>
+                                </p>
+                                <p>This OTP is valid for only <strong>5 minutes</strong>. Please do not share it with anyone.</p>
+                                <br>
+                                <p>Thanks,<br>The RoutineS Team</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 15px; text-align: center; font-size: 12px; color: #999999;">
+                                <p>&copy; 2024 RoutineS. All rights reserved.</p>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+            </html>
+        """
+
+        plain_message = f"""
+            Hi,
+
+            Thank you for registering with RoutineS.
+            Please verify your email address to complete the registration process.
+
+            Your OTP for registration on RoutineS is:
+
+            {otp}
+
+            This OTP is valid for only 5 minutes. Please do not share it with anyone.
+
+            If you did not initiate this request, please ignore this email.
+
+            Thanks,
+            The RoutineS Team
+        """
+
+
+        send_mail(
+            subject="Your OTP Code",
+            message=plain_message,  # Fallback plain text
+            from_email="noreply@routines.moynul.com",
+            recipient_list=[email],
+            fail_silently=False,
+            html_message=html_message  # The HTML version
+        )
+
+        return JsonResponse({"status": "ok"})
+
+@csrf_exempt
+def verify_otp(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        otp = data.get("otp")
+
+        if otp == request.session.get("otp"):
+            return JsonResponse({"status": "verified"})
+        else:
+            return JsonResponse({"status": "error", "message": "Invalid OTP"})

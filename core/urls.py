@@ -8,4 +8,7 @@ urlpatterns = [
     path('ajax/get-batches/<int:department_id>/', views.get_batches, name='get_batches'),
     path('logout/', views.logout_view, name='logout'),
     path('edit-profile/', views.edit_profile, name='edit_profile'),
+
+    path('send-otp/', views.send_otp, name='send_otp'),
+    path('verify-otp/', views.verify_otp, name='verify_otp'),
 ]

@@ -183,21 +183,31 @@ CSRF_TRUSTED_ORIGINS = [
     'http://routines.moynul.com', 'http://www.routines.moynul.com',
 ]
 
-if DEBUG:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "mail.bikoallinone.com"  # Your mail server
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_USE_SSL = False
-    EMAIL_HOST_USER = "customerbiko@bikoallinone.com"
-    EMAIL_HOST_PASSWORD = "Bikoallinone@MRJ"
-    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = env('EMAIL_HOST')  # Your mail server
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_USE_SSL = False
-    EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# if DEBUG:
+#     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+#     EMAIL_HOST = "mail.routines.moynul.com"  # Your mail server
+#     EMAIL_PORT = 587
+#     EMAIL_USE_TLS = True
+#     EMAIL_USE_SSL = False
+#     EMAIL_HOST_USER = "helpdesk@routines.moynul.com"
+#     EMAIL_HOST_PASSWORD = "@helpdesk_routines"
+#     DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# else:
+#     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+#     EMAIL_HOST = env('EMAIL_HOST')  # Your mail server
+#     EMAIL_PORT = 587
+#     EMAIL_USE_TLS = True
+#     EMAIL_USE_SSL = False
+#     EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+#     EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+#     DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "mail.bikoallinone.com"           # ✅ SMTP server
+EMAIL_PORT = 587                         # ✅ STARTTLS port
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False                    # ⚠️ Not both TLS and SSL
+EMAIL_HOST_USER = "customerbiko@bikoallinone.com"  # ✅ Use a valid mailbox from mail.moynul.com
+EMAIL_HOST_PASSWORD = "Bikoallinone@MRJ"        # ✅ Use the correct mailbox password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
