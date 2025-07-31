@@ -7,18 +7,18 @@ environ.Env.read_env()
 
 # Set base directory depending on debug mode
 DEBUG = env.bool('DEBUG', default=False)
+SECRET_KEY = env.str('SECRET_KEY', default='django-insecure-@aw+^)y#@%gw1&rao@+ks$6bi_i+dnpz)tj-+o5rjm8_t@4ik3')
 
 if DEBUG:
     BASE_DIR = Path(__file__).resolve().parent.parent
+    ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['.moynul.com'])
 else:
     BASE_DIR = Path('/home/routine/www/routines')
+    ALLOWED_HOSTS = ['*']
 
 
-DEBUG = env.bool('DEBUG', default=False)
 
-SECRET_KEY = env.str('SECRET_KEY', default='')
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
-# ALLOWED_HOSTS = ['*']
+
 
 
 NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
