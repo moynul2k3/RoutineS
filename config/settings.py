@@ -26,6 +26,11 @@ NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 # Application definition
 TAILWIND_APP_NAME = 'theme'
 
+print("DEBUG:", DEBUG)
+print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
+print("SECRET_KEY:", SECRET_KEY)
+print("BASE_DIR:", BASE_DIR)
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,9 +48,7 @@ INSTALLED_APPS = [
     'my_routine',
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://routineproject.onrender.com',
-]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
