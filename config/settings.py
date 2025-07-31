@@ -11,7 +11,7 @@ DEBUG = env.bool('DEBUG', default=False)
 if DEBUG:
     BASE_DIR = Path(__file__).resolve().parent.parent
 else:
-    BASE_DIR = Path('/home/routines/www/routines')
+    BASE_DIR = Path('/home/routine/www/routines')
 
 
 DEBUG = env.bool('DEBUG', default=False)
