@@ -208,6 +208,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = 'moynul.officials@gmail.com'           # ✅ Replace with your Gmail address
-EMAIL_HOST_PASSWORD = 'tkstpmllwvqtvtnx'     # ✅ Replace with Gmail app password
+EMAIL_HOST_USER = 'moynul.tcits@gmail.com'           # ✅ Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'xfuepjboqqdkqcpf'     # ✅ Replace with Gmail app password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

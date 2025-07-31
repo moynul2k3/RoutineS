@@ -50,7 +50,10 @@
                 
                 <div class="mt-10">
                     <p id="step1-error" class="text-red-400 text-sm hidden text-center mb-4"></p>
-                    <button type="button" onclick="sendOTP()" class="flex w-full justify-center rounded-md bg-pink-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-pink-500 cursor-pointer">Registration</button>
+                    <button id="send_otp_button" type="button" onclick="sendOTP()" class="flex w-full justify-center rounded-md bg-pink-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-pink-500 cursor-pointer">
+                        <span class="hidden spinner border-white border-2 border-t-transparent animate-spin rounded-full w-4 h-4 mr-2"></span>
+                        Registration
+                    </button>
                 </div>
             </div>
 
@@ -67,8 +70,11 @@
                 <div class="mt-10">
                     <p id="step2-error" class="text-red-400 text-sm hidden text-center mb-4"></p>
                     <div class="flex justify-between items-center gap-3">
-                        <button type="button" class="px-3 py-1.5 bg-pink-400 text-white flex justify-center items-center cursor-pointer rounded-md"><i class='bx  bx-arrow-left-stroke text-xl'  ></i> </button>
-                        <button type="button" onclick="verifyOTP()" class="flex w-full justify-center rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-emerald-500 cursor-pointer">Verify OTP</button>
+                        <button type="button" class="px-3 py-1.5 bg-pink-600 text-white flex justify-center items-center cursor-pointer rounded-md"><i class='bx  bx-arrow-left-stroke text-xl'  ></i> </button>
+                        <button id="verify_button" type="button" onclick="verifyOTP()" class="flex w-full justify-center rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-emerald-500 cursor-pointer">
+                            <span class="hidden spinner border-white border-2 border-t-transparent animate-spin rounded-full w-4 h-4 mr-2"></span>
+                            Verify OTP
+                        </button>
                     </div>
                 </div>
             </div>
@@ -123,7 +129,13 @@
                 </div>
 
                 <div class="mt-10">
-                    <button type="submit" class="flex w-full justify-center rounded-md bg-pink-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-pink-500">Complete</button>
+                    <div class="flex justify-between items-center gap-3">
+                        <button type="button" class="px-3 py-1.5 bg-pink-600 text-white flex justify-center items-center cursor-pointer rounded-md"><i class='bx  bx-arrow-left-stroke text-xl'  ></i> </button>
+                        <button id="submit_button" type="submit" class="flex w-full justify-center rounded-md bg-pink-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-pink-500">
+                            <span class="hidden spinner border-white border-2 border-t-transparent animate-spin rounded-full w-4 h-4 mr-2"></span>
+                            Complete
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -173,15 +185,47 @@
 
 <script>
     function showError(message, targetId = "step1-error") {
-    const errorBox = document.getElementById(targetId);
-    errorBox.textContent = message;
-    errorBox.classList.remove("hidden");
+        const errorBox = document.getElementById(targetId);
+        errorBox.textContent = message;
+        errorBox.classList.remove("hidden");
 
-    setTimeout(() => {
-        errorBox.classList.add("hidden");
-        errorBox.textContent = "";
-    }, 3000);
-}
+        setTimeout(() => {
+            errorBox.classList.add("hidden");
+            errorBox.textContent = "";
+        }, 3000);
+    }
+
+    function showLoading(buttonId) {
+        const btn = document.getElementById(buttonId);
+        const form = document.getElementById('registration-form');
+        btn.disabled = true;
+        btn.classList.add("opacity-70", "cursor-wait");
+        btn.classList.remove("cursor-pointer");
+        btn.querySelector(".spinner").classList.remove("hidden");
+
+        // Disable all inputs, selects, and buttons in the form
+        const allFields = form.querySelectorAll("input, select, textarea");
+        allFields.forEach(el => {
+            el.disabled = true;
+            el.classList.add("cursor-wait", "opacity-70");
+        });
+    }
+
+    function hideLoading(buttonId) {
+        const btn = document.getElementById(buttonId);
+        const form = document.getElementById('registration-form');
+        btn.disabled = false;
+        btn.classList.remove("opacity-70", "cursor-wait");
+        btn.classList.add("cursor-pointer");
+        btn.querySelector(".spinner").classList.add("hidden");
+
+        const allFields = form.querySelectorAll("input, select, textarea");
+        allFields.forEach(el => {
+            el.disabled = false;
+            el.classList.remove("cursor-wait", "opacity-70");
+        });
+    }
+
 
 
     function sendOTP() {
@@ -200,6 +244,8 @@
             showError("Passwords do not match.", "step1-error");
             return;
         }
+
+        showLoading("send_otp_button");
 
         // Proceed to send OTP
         fetch("{% url 'send_otp' %}", {
@@ -221,11 +267,16 @@
         })
         .catch(() => {
             showError("Something went wrong while sending OTP.", "step1-error");
+        })
+        .finally(() => {
+            hideLoading("verify_button");
         });
     }
 
     function verifyOTP() {
         const otp = document.getElementById("otp").value;
+
+        showLoading("verify_button");
 
         fetch("{% url 'verify_otp' %}", {
             method: "POST",
@@ -246,6 +297,9 @@
         })
         .catch(() => {
             showError("Something went wrong during verification.", "step2-error");
+        })
+        .finally(() => {
+            hideLoading("verify_button");
         });
     }
 
