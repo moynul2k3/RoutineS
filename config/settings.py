@@ -17,8 +17,8 @@ else:
 DEBUG = env.bool('DEBUG', default=False)
 
 SECRET_KEY = env.str('SECRET_KEY', default='')
-# ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
+# ALLOWED_HOSTS = ['*']
 
 
 NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
