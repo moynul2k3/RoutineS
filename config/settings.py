@@ -11,10 +11,10 @@ SECRET_KEY = env.str('SECRET_KEY', default='django-insecure-@aw+^)y#@%gw1&rao@+k
 
 if DEBUG:
     BASE_DIR = Path(__file__).resolve().parent.parent
-    ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['.moynul.com'])
+    ALLOWED_HOSTS = ['*']
 else:
     BASE_DIR = Path('/home/routine/www/routines')
-    ALLOWED_HOSTS = ['*']
+    ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['.moynul.com'])
 
 
 
