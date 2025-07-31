@@ -25,6 +25,8 @@ jobs:
             git pull origin main
             source menv/bin/activate
             pip install -r requirements.txt
+            python manage.py clean_pyc
+            python manage.py clear_cache
             python manage.py migrate --noinput
             python manage.py collectstatic --noinput
             sudo systemctl restart routine.solution.service
