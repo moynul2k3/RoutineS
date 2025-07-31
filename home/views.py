@@ -195,7 +195,7 @@ def update_university(request, university_id):
                     if batch_name.strip():
                         Batch.objects.create(department=department, name=batch_name.strip())
 
-        messages.success(request, "University updated successfully!")
+        messages.success(request, "University data updated!")
         # return redirect('update_university', university_id=university.id)
         return redirect('university_detail_view')
 
