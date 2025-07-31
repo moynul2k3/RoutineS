@@ -57,10 +57,10 @@ MIDDLEWARE = [
 
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
-if DEBUG:
-    MIDDLEWARE += [
-        "django_browser_reload.middleware.BrowserReloadMiddleware",
-    ]
+# if DEBUG:
+#     MIDDLEWARE += [
+#         "django_browser_reload.middleware.BrowserReloadMiddleware",
+#     ]
 
 ROOT_URLCONF = 'config.urls'
 
