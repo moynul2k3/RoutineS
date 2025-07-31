@@ -140,7 +140,7 @@ def manage_university(request):
                     Batch.objects.create(department=dept, name=batch_name.strip())
 
         messages.success(request, "University and related data saved successfully!")
-        return redirect('manage_university')
+        return redirect('university_detail_view')
 
     return render(request, 'manage_university.html')
 
@@ -150,7 +150,7 @@ def update_university(request, university_id):
     university = get_object_or_404(University, id=university_id)
 
     user = request.user
-    if not (user.is_staff or user.is_superuser):
+    if not (user.is_staff or user.is_superuser or user.is_CR):
         return redirect('/')
 
     if request.method == 'POST':
@@ -196,7 +196,8 @@ def update_university(request, university_id):
                         Batch.objects.create(department=department, name=batch_name.strip())
 
         messages.success(request, "University updated successfully!")
-        return redirect('update_university', university_id=university.id)
+        # return redirect('update_university', university_id=university.id)
+        return redirect('university_detail_view')
 
     context = {
         'university': university,
