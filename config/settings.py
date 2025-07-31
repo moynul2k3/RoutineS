@@ -4,16 +4,17 @@ import environ
 # Initialize environment variables
 env = environ.Env()
 environ.Env.read_env()
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Set base directory depending on debug mode
 DEBUG = env.bool('DEBUG', default=False)
 SECRET_KEY = env.str('SECRET_KEY', default='django-insecure-@aw+^)y#@%gw1&rao@+ks$6bi_i+dnpz)tj-+o5rjm8_t@4ik3')
 
 if DEBUG:
-    BASE_DIR = Path(__file__).resolve().parent.parent
+    PATH_DIR = Path(__file__).resolve().parent.parent
     ALLOWED_HOSTS = ['*']
 else:
-    BASE_DIR = Path('/home/routine/www/routines')
+    PATH_DIR = Path('/home/routine/www/routines')
     ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['.moynul.com'])
 
 
@@ -116,7 +117,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db/db.sqlite3',
+            'NAME': PATH_DIR / 'db/db.sqlite3',
         }
     }
 
@@ -161,8 +162,8 @@ import os
 STATIC_URL = 'static/'
 MEDIA_URL = 'media/'
 
-STATIC_ROOT = BASE_DIR / 'static'
-MEDIA_ROOT = BASE_DIR / 'media'
+STATIC_ROOT = PATH_DIR / 'static'
+MEDIA_ROOT = PATH_DIR / 'media'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
