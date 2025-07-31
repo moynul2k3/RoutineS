@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-@aw+^)y#@%gw1&rao@+ks$6bi_i+dnpz)tj-+o5rjm8_t@4ik3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'routines-s070.onrender.com', '.onrender.com', 'www.routines-s070.onrender.com']
 NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
