@@ -1,16 +1,25 @@
 from pathlib import Path
+import environ
+
+# Initialize environment variables
+env = environ.Env()
+environ.Env.read_env()
+
+# Set base directory depending on debug mode
+DEBUG = env.bool('DEBUG', default=False)
+
+if DEBUG:
+    BASE_DIR = Path(__file__).resolve().parent.parent
+else:
+    BASE_DIR = Path('/home/routines/www/routines')
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+DEBUG = env.bool('DEBUG', default=False)
+
+SECRET_KEY = env.str('SECRET_KEY', default='')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@aw+^)y#@%gw1&rao@+ks$6bi_i+dnpz)tj-+o5rjm8_t@4ik3'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'routines-s070.onrender.com', '.onrender.com', 'www.routines-s070.onrender.com']
 NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 
 # Application definition
@@ -26,7 +35,7 @@ INSTALLED_APPS = [
 
     'tailwind',
     'theme',
-    # 'django_browser_reload',
+    'django_browser_reload',
     'core',
     'home',
     'my_routine',
@@ -45,9 +54,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    # "django_browser_reload.middleware.BrowserReloadMiddleware",
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+if DEBUG:
+    MIDDLEWARE += [
+        "django_browser_reload.middleware.BrowserReloadMiddleware",
+    ]
 
 ROOT_URLCONF = 'config.urls'
 
@@ -75,12 +87,35 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+
+DATABASES_CHECK = env.bool('DATABASES', default=False)
+if DATABASES_CHECK:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',  # Django uses mysql backend for MariaDB
+            'NAME': env('DATABASE_NAME'),
+            'USER': env('DATABASE_USER'),
+            'PASSWORD': env('DATABASE_PASSWORD'),
+            'HOST': 'localhost',
+            'PORT': '3306',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db/db.sqlite3',
+        }
+    }
+
+
 
 
 # Password validation
@@ -119,9 +154,11 @@ USE_TZ = True
 import os
 
 STATIC_URL = 'static/'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = 'media/'
+
 STATIC_ROOT = BASE_DIR / 'static'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
@@ -138,3 +175,22 @@ AUTHENTICATION_BACKENDS = [
 CSRF_TRUSTED_ORIGINS = [
     'https://routines-s070.onrender.com'
 ]
+
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "mail.bikoallinone.com"  # Your mail server
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_USE_SSL = False
+    EMAIL_HOST_USER = "customerbiko@bikoallinone.com"
+    EMAIL_HOST_PASSWORD = "Bikoallinone@MRJ"
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = env('EMAIL_HOST')  # Your mail server
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_USE_SSL = False
+    EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
