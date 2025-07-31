@@ -175,7 +175,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://routines-s070.onrender.com'
+    'https://routines.moynul.com', 'https://www.routines.moynul.com',
+    'http://routines.moynul.com', 'http://www.routines.moynul.com',
 ]
 
 if DEBUG:
