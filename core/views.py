@@ -13,6 +13,8 @@ from django.core.mail import send_mail
 from django.views.decorators.csrf import csrf_exempt
 import json
 
+from django.utils.crypto import get_random_string
+
 def sign_in(request):
     if request.method == 'POST':
         identifier = request.POST.get('email')  # this field holds email or REG_no
@@ -223,3 +225,129 @@ def verify_otp(request):
             return JsonResponse({"status": "verified"})
         else:
             return JsonResponse({"status": "error", "message": "Invalid OTP"})
+        
+
+
+
+
+
+OTP_SESSION_KEY = "forgot_password_otp"
+
+def forgot_password(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        if not UserAccount.objects.filter(email=email).exists():
+            return JsonResponse({"status": "error", "message": "Email not registered"}, status=400)
+
+        otp = get_random_string(length=6, allowed_chars='1234567890')
+        request.session[OTP_SESSION_KEY] = {"email": email, "otp": otp}
+
+        html_message = f"""
+            <html>
+                <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 20px;">
+                    <table align="center" width="100%" style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        <tr>
+                            <td style="padding: 20px; text-align: center; background-color: #4a3aff; color: #ffffff; border-radius: 8px 8px 0 0;">
+                                <h1>RoutineS - Password Reset</h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 20px; text-align: left; color: #333333;">
+                                <p>Hi there,</p>
+                                <p>You requested to reset your password for your <strong>RoutineS</strong> account.</p>
+                                <p style="text-align: center; margin: 30px 0;">
+                                    <span style="display: inline-block; padding: 12px 24px; background-color: #4a3aff; color: #ffffff; border-radius: 6px; font-size: 24px; font-weight: bold; letter-spacing: 2px;">
+                                        {otp}
+                                    </span>
+                                </p>
+                                <p>This OTP is valid for only <strong>5 minutes</strong>. Please do not share it with anyone.</p>
+                                <p>If you did not request a password reset, please ignore this email or contact support.</p>
+                                <br>
+                                <p>Thanks,<br>The RoutineS Team</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 15px; text-align: center; font-size: 12px; color: #999999;">
+                                <p>&copy; 2024 RoutineS. All rights reserved.</p>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+            </html>
+            """
+
+        plain_message = f"""
+            Hi,
+
+            You requested to reset your password for your RoutineS account.
+
+            Your OTP to reset your password is:
+
+            {otp}
+
+            This OTP is valid for only 5 minutes. Please do not share it with anyone.
+
+            If you did not request a password reset, please ignore this email or contact support.
+
+            Thanks,
+            The RoutineS Team
+        """
+
+        send_mail(
+            subject="RoutineS - Password Reset OTP",
+            message=plain_message,
+            from_email="noreply@routines.com",
+            recipient_list=[email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+        
+        return JsonResponse({"status": "ok", "message": "OTP sent"})
+
+    return render(request, "forgot_password.html")
+
+
+
+OTP_SESSION_KEY = "forgot_password_otp"
+
+def verify_forgot_otp(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            otp = data.get("otp")
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
+
+        session_data = request.session.get(OTP_SESSION_KEY)
+
+        if not session_data:
+            return JsonResponse({"status": "error", "message": "No OTP session found"}, status=400)
+
+        if otp == session_data.get("otp"):
+            return JsonResponse({"status": "verified", "message": "OTP verified"})
+
+        return JsonResponse({"status": "error", "message": "Invalid OTP"}, status=400)
+
+    return JsonResponse({"status": "error", "message": "Invalid method"}, status=405)
+
+
+# @csrf_exempt
+def reset_password(request):
+    new_password = request.POST.get("new_password")
+    confirm_password = request.POST.get("confirm_password")
+    session_data = request.session.get(OTP_SESSION_KEY)
+
+    if not session_data:
+        return JsonResponse({"status": "error", "message": "No session found"}, status=400)
+
+    if new_password != confirm_password:
+        return JsonResponse({"status": "error", "message": "Passwords do not match"}, status=400)
+
+    try:
+        user = UserAccount.objects.get(email=session_data.get("email"))
+        user.set_password(new_password)
+        user.save()
+        del request.session[OTP_SESSION_KEY]
+        return JsonResponse({"status": "ok", "message": "Password reset successfully"})
+    except UserAccount.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "User not found"}, status=400)
